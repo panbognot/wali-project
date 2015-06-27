@@ -565,16 +565,46 @@ function newEntry() {
 	}
 }
 
+function loadXMLDoc() {
+	var xmlhttp;
+	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	}
+	else {// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			document.getElementById("myDiv").innerHTML=xmlhttp.responseText;
+		}
+	}
+	//xmlhttp.open("GET","demo_get2.asp?fname=Henry&lname=Ford",true);
+	//xmlhttp.send();
+
+	xmlhttp.open("POST","demo_post2.asp",true);
+	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xmlhttp.send("fname=Henry&lname=Ford");	
+}
+
+var clusterid, activate_time, brightness, day_of_week;
 function addNewEntry (elemid) {
 	var parent = elemid.parentNode;
+	var rowElem = parent.parentNode.childNodes;
 	var kids = parent.childNodes;
+
+	clusterid = <?php echo $_GET['clusterid'] ?>;
+	day_of_week = rowElem[0].textContent;
+	activate_time = rowElem[1].textContent;
+	brightness = rowElem[2].textContent;
 
 	for (var i = 0; i < kids.length; i++) {
 		if (kids[i].textContent === "Add") {
 			kids[i].innerHTML = "Update";
+			kids[i].setAttribute('onclick', 'updateEntry(this)');
 		}
 		if (kids[i].textContent === "Cancel") {
 			kids[i].innerHTML = "Delete";
+			kids[i].setAttribute('onclick', 'deleteEntry(this)');
 		}	        
     }
 }
