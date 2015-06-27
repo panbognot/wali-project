@@ -439,7 +439,7 @@ include './header.php';
 					mysql_free_result($result);
 				?>
 				<h2><?php echo $cluster['name'];?></h2>       
-				  <table class="table table-hover">
+				<table class="table table-hover">
 					<?php
 						//Get the schedules from alarm_schedule
 						$sql="SELECT 
@@ -492,7 +492,7 @@ include './header.php';
 								$strDayOfWeek = "<tr id=\"$strTsId\"><td>".$timeslot['day_of_week']."</td>";
 								$strActivate = "<td>".$timeslot['activate_time']."</td>";
 								$strBrightness = "<td>".$timeslot['brightness']."</td>";
-								$strActions = "<td><a href=\"#\">Update</a>&nbsp&nbsp&nbsp<a href=\"#\">Delete</a></td>";
+								$strActions = "<td><a href=\"#\">Update</a>&nbsp|&nbsp<a href=\"#\">Delete</a></td>";
 								
 								$selectString = $strDayOfWeek.$strActivate.$strBrightness.$strActions."</tr>";
 								echo "$selectString";
@@ -500,7 +500,8 @@ include './header.php';
 						?>
 
 				    </tbody>
-				  </table>
+				</table>
+				<a href="#" class="btn btn-warning" onclick="newEntry()"><span class="glyphicon glyphicon-plus"></span> New Entry</a>
 			</div>
 		</div>
 		<div id="push" class="container"><h1>&nbsp;</h1></div>
@@ -514,4 +515,51 @@ include './header.php';
 </div>
 
 </body>
+
+<script type="text/javascript">
+var elems = [
+    text( document.createElement("td"), "ALL" ),
+    text( document.createElement("td"), "00:00:00" ),
+    text( document.createElement("td"), "0" ),
+    document.createElement("td")
+];
+ 
+var actions = [
+	text( document.createElement("a"), "Add" ),
+	document.createTextNode(" | "),
+	text( document.createElement("a"), "Cancel" ),
+];
+
+function text(node, txt){
+    node.appendChild( document.createTextNode(txt) );
+    return node;
+}
+
+function newEntry() {
+	/*
+    var node = document.createElement("tr");
+    var textnode = document.createTextNode("Water");
+    node.appendChild(textnode);
+    document.getElementById("myList").appendChild(node);
+    */
+
+	var div = document.getElementsByTagName("tbody");
+	 
+	for ( var i = 0; i < div.length; i++ ) {
+		var node = document.createElement("tr");
+		div[i].appendChild(node);
+	    for ( var e = 0; e < elems.length; e++ ) {
+	        //div[i].appendChild( elems[e].cloneNode(true) );
+	        node.appendChild( elems[e].cloneNode(true) );
+
+	        if (e == elems.length - 1) {
+	        	node.lastChild.appendChild( actions[0].cloneNode(true) );
+	        	node.lastChild.appendChild( actions[1].cloneNode(true) );
+	        	node.lastChild.appendChild( actions[2].cloneNode(true) );
+	        };
+	    }
+	}
+}
+</script>
+
 </html>
