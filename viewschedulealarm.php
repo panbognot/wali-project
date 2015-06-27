@@ -492,7 +492,7 @@ include './header.php';
 								$strDayOfWeek = "<tr id=\"$strTsId\"><td>".$timeslot['day_of_week']."</td>";
 								$strActivate = "<td>".$timeslot['activate_time']."</td>";
 								$strBrightness = "<td>".$timeslot['brightness']."</td>";
-								$strActions = "<td><a href=\"#\">Update</a>&nbsp|&nbsp<a href=\"#\">Delete</a></td>";
+								$strActions = "<td><a href=\"#\" onclick=\"updateEntry()\">Update</a>&nbsp|&nbsp<a href=\"#\" onclick=\"deleteEntry()\">Delete</a></td>";
 								
 								$selectString = $strDayOfWeek.$strActivate.$strBrightness.$strActions."</tr>";
 								echo "$selectString";
@@ -523,11 +523,11 @@ var elems = [
     text( document.createElement("td"), "0" ),
     document.createElement("td")
 ];
- 
+
 var actions = [
 	text( document.createElement("a"), "Add" ),
 	document.createTextNode(" | "),
-	text( document.createElement("a"), "Cancel" ),
+	text( document.createElement("a"), "Cancel" )
 ];
 
 function text(node, txt){
@@ -542,17 +542,58 @@ function newEntry() {
 		var node = document.createElement("tr");
 		div[i].appendChild(node);
 	    for ( var e = 0; e < elems.length; e++ ) {
-	        //div[i].appendChild( elems[e].cloneNode(true) );
 	        node.appendChild( elems[e].cloneNode(true) );
 
 	        if (e == elems.length - 1) {
 	        	for ( var j = 0; j < actions.length; j++ ) {
 	        		node.lastChild.appendChild( actions[j].cloneNode(true) );
+
+	        		var childElem = node.lastChild.lastChild;
+	        		if (childElem.nodeName.toLowerCase() === "a") {
+	        			childElem.setAttribute('href', '#');
+
+	        			if (childElem.textContent === "Add") {
+	        				childElem.setAttribute('onclick', 'addNewEntry(this)');
+	        			}
+	        			if (childElem.textContent === "Cancel") {
+	        				childElem.setAttribute('onclick', 'cancelNewEntry(this)');
+	        			}
+	        		}
 	        	}
 	        };
 	    }
 	}
 }
+
+function addNewEntry (elemid) {
+	var parent = elemid.parentNode;
+	var kids = parent.childNodes;
+
+	for (var i = 0; i < kids.length; i++) {
+		if (kids[i].textContent === "Add") {
+			kids[i].innerHTML = "Update";
+		}
+		if (kids[i].textContent === "Cancel") {
+			kids[i].innerHTML = "Delete";
+		}	        
+    }
+}
+
+function cancelNewEntry (elemid) {
+	var row = elemid.parentNode.parentNode;
+	var tbody = row.parentNode;
+
+	tbody.removeChild(row);
+}
+
+function updateEntry () {
+
+}
+
+function deleteEntry () {
+
+}
+
 </script>
 
 </html>
