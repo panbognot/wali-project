@@ -586,17 +586,18 @@ function loadXMLDoc() {
 	xmlhttp.send("fname=Henry&lname=Ford");	
 }
 
-var clusterid, activate_time, brightness, day_of_week;
+var clusterId, activateTime, brightness, dayOfWeekStr;
 function addNewEntry (elemid) {
 	var parent = elemid.parentNode;
 	var rowElem = parent.parentNode.childNodes;
 	var kids = parent.childNodes;
 
-	clusterid = <?php echo $_GET['clusterid'] ?>;
-	day_of_week = rowElem[0].textContent;
-	activate_time = rowElem[1].textContent;
+	clusterId = <?php echo $_GET['clusterid'] ?>;
+	activateTime = rowElem[1].textContent;
 	brightness = rowElem[2].textContent;
+	dayOfWeekStr = rowElem[0].textContent;
 
+	/*
 	for (var i = 0; i < kids.length; i++) {
 		if (kids[i].textContent === "Add") {
 			kids[i].innerHTML = "Update";
@@ -607,6 +608,36 @@ function addNewEntry (elemid) {
 			kids[i].setAttribute('onclick', 'deleteEntry(this)');
 		}	        
     }
+    */
+
+	var xmlhttp;
+	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	}
+	else {// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			for (var i = 0; i < kids.length; i++) {
+				if (kids[i].textContent === "Add") {
+					kids[i].innerHTML = "Update";
+					kids[i].setAttribute('onclick', 'updateEntry(this)');
+				}
+				if (kids[i].textContent === "Cancel") {
+					kids[i].innerHTML = "Delete";
+					kids[i].setAttribute('onclick', 'deleteEntry(this)');
+				}	        
+		    }
+		}
+	}
+
+	//xmlhttp.open("GET","processaddschedulealarm.php?clusterId="+clusterId+"&activateTime="+activateTime+"&brightness="+brightness+"&dayOfWeek="+dayOfWeekStr,true);
+	//xmlhttp.send();
+
+	xmlhttp.open("POST","processaddschedulealarm.php",true);
+	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xmlhttp.send("clusterId="+clusterId+"&activateTime="+activateTime+"&brightness="+brightness+"&dayOfWeek="+dayOfWeekStr);	    
 }
 
 function cancelNewEntry (elemid) {
