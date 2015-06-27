@@ -536,13 +536,6 @@ function text(node, txt){
 }
 
 function newEntry() {
-	/*
-    var node = document.createElement("tr");
-    var textnode = document.createTextNode("Water");
-    node.appendChild(textnode);
-    document.getElementById("myList").appendChild(node);
-    */
-
 	var div = document.getElementsByTagName("tbody");
 	 
 	for ( var i = 0; i < div.length; i++ ) {
@@ -553,9 +546,9 @@ function newEntry() {
 	        node.appendChild( elems[e].cloneNode(true) );
 
 	        if (e == elems.length - 1) {
-	        	node.lastChild.appendChild( actions[0].cloneNode(true) );
-	        	node.lastChild.appendChild( actions[1].cloneNode(true) );
-	        	node.lastChild.appendChild( actions[2].cloneNode(true) );
+	        	for ( var j = 0; j < actions.length; j++ ) {
+	        		node.lastChild.appendChild( actions[j].cloneNode(true) );
+	        	}
 	        };
 	    }
 	}
