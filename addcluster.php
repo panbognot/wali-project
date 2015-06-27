@@ -258,7 +258,8 @@ include './header.php';
 </div>
 <div id="content">
 	<div class="container-fluid">
-		<form class="form-horizontal" id="addDetailsForm" name="addDetailsForm" role="form" onsubmit="prepareList();" action="./processaddcluster.php" method="post">
+		<!-- form class="form-horizontal" id="addDetailsForm" name="addDetailsForm" role="form" onsubmit="prepareList();" action="./processaddcluster.php" method="post" -->
+		<form class="form-horizontal" id="addDetailsForm" name="addDetailsForm" role="form" onsubmit="prepareList();" action="./processaddclusteralarm.php" method="post">	
 		  <div class="form-group">
 			<label for="nameCluster" class="col-sm-2 control-label">Name</label>
 			<div class="col-sm-10">
