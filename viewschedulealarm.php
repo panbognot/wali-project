@@ -196,6 +196,9 @@ mysql_free_result($result);
 		*/
 
 	</script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	<script type="text/javascript" src="./js/jquery.timepicker.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/jquery.timepicker.css" />	
 	<style>
 	
 		#wrap {
@@ -489,9 +492,27 @@ include './header.php';
 						<?php 							
 							foreach ($schedule as $timeslot) {
 								$strTsId = $timeslot['scheduleid'];
-								$strDayOfWeek = "<tr id=\"$strTsId\"><td>".$timeslot['day_of_week']."</td>";
-								$strActivate = "<td>".$timeslot['activate_time']."</td>";
-								$strBrightness = "<td>".$timeslot['brightness']."</td>";
+								//$strDayOfWeek = "<tr id=\"$strTsId\"><td><input type=\"text\" class=\"form-control\" value=\"".$timeslot['day_of_week']."\"></td>";
+								$strDayOfWeek = "<td><select class=\"dayOfWeek form-control\">";
+
+									foreach ($daysofweek as $day) {
+										$selectStringPre = "<option value=\"$day\"";
+										
+										if ($timeslot['day_of_week'] == $day) {
+											$selectStringPre = $selectStringPre . "selected=\"selected\"";
+										}
+
+										$selectStringPost = ">$day</option>";
+										$selectString = $selectStringPre.$selectStringPost;
+
+										$strDayOfWeek = $strDayOfWeek.$selectString;
+									}
+
+								$strDayOfWeek = $strDayOfWeek."</select></td>";
+
+
+								$strActivate = "<td><input type=\"text\" class=\"form-control time activateTime\" value=\"".$timeslot['activate_time']."\"></td>";
+								$strBrightness = "<td><input type=\"text\" class=\"form-control\" value=\"".$timeslot['brightness']."\"></td>";
 								$strActions = "<td><a href=\"#\" onclick=\"updateEntry()\">Update</a>&nbsp|&nbsp<a href=\"#\" onclick=\"deleteEntry()\">Delete</a></td>";
 								
 								$selectString = $strDayOfWeek.$strActivate.$strBrightness.$strActions."</tr>";
@@ -501,7 +522,8 @@ include './header.php';
 
 				    </tbody>
 				</table>
-				<a href="#" class="btn btn-warning" onclick="newEntry()"><span class="glyphicon glyphicon-plus"></span> New Entry</a>
+				<a href="#" class="btn btn-warning" onclick="newEntry()"><span class="glyphicon glyphicon-plus"></span> New Entry</a>	
+
 			</div>
 		</div>
 		<div id="push" class="container"><h1>&nbsp;</h1></div>
@@ -517,6 +539,10 @@ include './header.php';
 </body>
 
 <script type="text/javascript">
+$(function(){
+	$('.activateTime').timepicker({ 'timeFormat': 'H:i:s' });
+});
+
 var elems = [
     text( document.createElement("td"), "ALL" ),
     text( document.createElement("td"), "00:00:00" ),
@@ -597,19 +623,6 @@ function addNewEntry (elemid) {
 	brightness = rowElem[2].textContent;
 	dayOfWeekStr = rowElem[0].textContent;
 
-	/*
-	for (var i = 0; i < kids.length; i++) {
-		if (kids[i].textContent === "Add") {
-			kids[i].innerHTML = "Update";
-			kids[i].setAttribute('onclick', 'updateEntry(this)');
-		}
-		if (kids[i].textContent === "Cancel") {
-			kids[i].innerHTML = "Delete";
-			kids[i].setAttribute('onclick', 'deleteEntry(this)');
-		}	        
-    }
-    */
-
 	var xmlhttp;
 	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
 		xmlhttp=new XMLHttpRequest();
@@ -631,9 +644,6 @@ function addNewEntry (elemid) {
 		    }
 		}
 	}
-
-	//xmlhttp.open("GET","processaddschedulealarm.php?clusterId="+clusterId+"&activateTime="+activateTime+"&brightness="+brightness+"&dayOfWeek="+dayOfWeekStr,true);
-	//xmlhttp.send();
 
 	xmlhttp.open("POST","processaddschedulealarm.php",true);
 	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
