@@ -29,7 +29,7 @@ CREATE TABLE `alarm_schedule` (
   `brightness` int(3) DEFAULT '100',
   `day_of_week` varchar(4) NOT NULL,
   PRIMARY KEY (`scheduleid`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +38,7 @@ CREATE TABLE `alarm_schedule` (
 
 LOCK TABLES `alarm_schedule` WRITE;
 /*!40000 ALTER TABLE `alarm_schedule` DISABLE KEYS */;
-INSERT INTO `alarm_schedule` VALUES (1,1,'18:30:00',100,'MON'),(2,1,'06:00:00',0,'TUE'),(3,1,'18:30:00',100,'WED'),(4,2,'18:00:00',80,'ALL'),(5,2,'06:00:00',0,'ALL');
+INSERT INTO `alarm_schedule` VALUES (4,2,'18:00:00',80,'0'),(5,2,'06:00:00',0,'0'),(6,2,'20:00:00',90,'0'),(7,2,'22:00:00',100,'0'),(8,2,'04:00:00',90,'0'),(9,2,'05:00:00',80,'0'),(12,3,'06:00:00',0,'0'),(13,3,'18:00:00',100,'0'),(16,1,'00:00:00',90,'0'),(17,1,'02:00:00',80,'0'),(18,1,'03:00:00',60,'0'),(19,1,'04:00:00',50,'0'),(20,1,'05:00:00',40,'0'),(21,1,'06:00:00',20,'0'),(22,1,'18:00:00',50,'0'),(23,1,'19:00:00',70,'0');
 /*!40000 ALTER TABLE `alarm_schedule` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,8 +116,32 @@ CREATE TABLE `cluster_bulb` (
 
 LOCK TABLES `cluster_bulb` WRITE;
 /*!40000 ALTER TABLE `cluster_bulb` DISABLE KEYS */;
-INSERT INTO `cluster_bulb` VALUES (1,1),(1,2),(2,2),(3,1),(3,2);
+INSERT INTO `cluster_bulb` VALUES (1,1),(2,2),(3,1);
 /*!40000 ALTER TABLE `cluster_bulb` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `day_of_week`
+--
+
+DROP TABLE IF EXISTS `day_of_week`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `day_of_week` (
+  `dow_id` int(11) NOT NULL,
+  `day` varchar(4) DEFAULT NULL,
+  PRIMARY KEY (`dow_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `day_of_week`
+--
+
+LOCK TABLES `day_of_week` WRITE;
+/*!40000 ALTER TABLE `day_of_week` DISABLE KEYS */;
+INSERT INTO `day_of_week` VALUES (0,'ALL'),(1,'MON'),(2,'TUE'),(3,'WED'),(4,'THU'),(5,'FRI'),(6,'SAT'),(7,'SUN');
+/*!40000 ALTER TABLE `day_of_week` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -239,4 +263,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-25 11:35:04
+-- Dump completed on 2015-06-29 10:37:22
