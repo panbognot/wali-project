@@ -574,12 +574,13 @@ function newEntry() {
 		var node = document.createElement("tr");
 		div[i].appendChild(node);
 
-		var tdNode, selectNode, optionNode, inputNode;
+		var tdNode, selectNode, optionNode, inputNode, anchorNode;
+
+		// Create Dropdown List for Day of Week
 		node.appendChild(tdNode = document.createElement("td"));
 		tdNode.appendChild(selectNode = document.createElement("select"));
 
 		selectNode.setAttribute('class', 'dayOfWeek form-control');
-		
 		var daysofweeklist = ["ALL","MON","TUE","WED","THU","FRI","SAT","SUN"];
 
 		for (var i = 0; i < daysofweeklist.length; i++) {
@@ -589,30 +590,36 @@ function newEntry() {
 			selectNode.add(optionNode);    		    
 		}
 
-		/*
-	    for ( var e = 0; e < elems.length; e++ ) {
-	        node.appendChild( elems[e].cloneNode(true) );
+		// Create Input for Activate Time
+		node.appendChild(tdNode = document.createElement("td"));
+		tdNode.appendChild(inputNode = document.createElement("input"));
 
+		inputNode.setAttribute('type', 'text');
+		inputNode.setAttribute('class', 'form-control time activateTime');
+		inputNode.setAttribute('value', '00:00:00');
 
-	        if (e == elems.length - 1) {
-	        	for ( var j = 0; j < actions.length; j++ ) {
-	        		node.lastChild.appendChild( actions[j].cloneNode(true) );
+		$('.activateTime').timepicker({ 'timeFormat': 'H:i:s' });
 
-	        		var childElem = node.lastChild.lastChild;
-	        		if (childElem.nodeName.toLowerCase() === "a") {
-	        			childElem.setAttribute('href', '#');
+		// Create Input for Brightness
+		node.appendChild(tdNode = document.createElement("td"));
+		tdNode.appendChild(inputNode = document.createElement("input"));
 
-	        			if (childElem.textContent === "Add") {
-	        				childElem.setAttribute('onclick', 'addNewEntry(this)');
-	        			}
-	        			if (childElem.textContent === "Cancel") {
-	        				childElem.setAttribute('onclick', 'cancelNewEntry(this)');
-	        			}
-	        		}
-	        	}
-	        } 
-	    }
-	    */
+		inputNode.setAttribute('type', 'text');
+		inputNode.setAttribute('class', 'form-control brightness');
+		inputNode.setAttribute('value', '0');
+
+		// Create Buttons for Add and Cancel Actions
+		node.appendChild(tdNode = document.createElement("td"));
+		// Add
+		tdNode.appendChild(anchorNode = text( document.createElement("a"), "Add" ));
+		anchorNode.setAttribute('href', '#');
+		anchorNode.setAttribute('onclick', 'addNewEntry(this)');
+		// Separator
+		tdNode.appendChild(document.createTextNode(" | "));
+		// Cancel
+		tdNode.appendChild(anchorNode = text( document.createElement("a"), "Cancel" ));
+		anchorNode.setAttribute('href', '#');
+		anchorNode.setAttribute('onclick', 'cancelNewEntry(this)');
 	}
 }
 
