@@ -489,16 +489,16 @@ include './header.php';
 				    </thead>
 				    <tbody>
 				      
-						<?php 							
-							foreach ($schedule as $timeslot) {
-								$strTsId = $timeslot['scheduleid'];
-								//$strDayOfWeek = "<tr id=\"$strTsId\"><td><input type=\"text\" class=\"form-control\" value=\"".$timeslot['day_of_week']."\"></td>";
+						<?php 	
+							function createDayOfWeek ($dow) {
+								$daysofweekArr = array("ALL","MON","TUE","WED","THU","FRI","SAT","SUN");
+
 								$strDayOfWeek = "<td><select class=\"dayOfWeek form-control\">";
 
-									foreach ($daysofweek as $day) {
+									foreach ($daysofweekArr as $day) {
 										$selectStringPre = "<option value=\"$day\"";
 										
-										if ($timeslot['day_of_week'] == $day) {
+										if ($dow == $day) {
 											$selectStringPre = $selectStringPre . "selected=\"selected\"";
 										}
 
@@ -510,9 +510,15 @@ include './header.php';
 
 								$strDayOfWeek = $strDayOfWeek."</select></td>";
 
+								return $strDayOfWeek;
+							}
+
+							foreach ($schedule as $timeslot) {
+								$strTsId = $timeslot['scheduleid'];
+								$strDayOfWeek = createDayOfWeek($timeslot['day_of_week']);
 
 								$strActivate = "<td><input type=\"text\" class=\"form-control time activateTime\" value=\"".$timeslot['activate_time']."\"></td>";
-								$strBrightness = "<td><input type=\"text\" class=\"form-control\" value=\"".$timeslot['brightness']."\"></td>";
+								$strBrightness = "<td><input type=\"text\" class=\"form-control brightness\" value=\"".$timeslot['brightness']."\"></td>";
 								$strActions = "<td><a href=\"#\" onclick=\"updateEntry()\">Update</a>&nbsp|&nbsp<a href=\"#\" onclick=\"deleteEntry()\">Delete</a></td>";
 								
 								$selectString = $strDayOfWeek.$strActivate.$strBrightness.$strActions."</tr>";
@@ -562,6 +568,55 @@ function text(node, txt){
 }
 
 function newEntry() {
+	var div = document.getElementsByTagName("tbody");
+	 
+	for ( var i = 0; i < div.length; i++ ) {
+		var node = document.createElement("tr");
+		div[i].appendChild(node);
+
+		var tdNode, selectNode, optionNode, inputNode;
+		node.appendChild(tdNode = document.createElement("td"));
+		tdNode.appendChild(selectNode = document.createElement("select"));
+
+		selectNode.setAttribute('class', 'dayOfWeek form-control');
+		
+		var daysofweeklist = ["ALL","MON","TUE","WED","THU","FRI","SAT","SUN"];
+
+		for (var i = 0; i < daysofweeklist.length; i++) {
+			optionNode = document.createElement("option");
+			optionNode.value = daysofweeklist[i];
+			optionNode.text = daysofweeklist[i];
+			selectNode.add(optionNode);    		    
+		}
+
+		/*
+	    for ( var e = 0; e < elems.length; e++ ) {
+	        node.appendChild( elems[e].cloneNode(true) );
+
+
+	        if (e == elems.length - 1) {
+	        	for ( var j = 0; j < actions.length; j++ ) {
+	        		node.lastChild.appendChild( actions[j].cloneNode(true) );
+
+	        		var childElem = node.lastChild.lastChild;
+	        		if (childElem.nodeName.toLowerCase() === "a") {
+	        			childElem.setAttribute('href', '#');
+
+	        			if (childElem.textContent === "Add") {
+	        				childElem.setAttribute('onclick', 'addNewEntry(this)');
+	        			}
+	        			if (childElem.textContent === "Cancel") {
+	        				childElem.setAttribute('onclick', 'cancelNewEntry(this)');
+	        			}
+	        		}
+	        	}
+	        } 
+	    }
+	    */
+	}
+}
+
+function newEntryOld() {
 	var div = document.getElementsByTagName("tbody");
 	 
 	for ( var i = 0; i < div.length; i++ ) {
