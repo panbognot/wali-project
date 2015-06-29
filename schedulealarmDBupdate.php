@@ -30,20 +30,10 @@ foreach ($daysofweek as $day) {
 $con=mysql_connect("$host", "$username", "$password")or die("cannot connect"); 
 mysql_select_db("$db_name")or die("cannot select DB");
 
-if(isset($_POST['update'])) {
-	$sql="UPDATE alarm_schedule SET activate_time='$activate_time', brightness=$brightness, day_of_week=$day_of_week WHERE scheduleid=$scheduleid";
+$sql="UPDATE alarm_schedule SET activate_time='$activate_time', brightness=$brightness, day_of_week=$day_of_week WHERE scheduleid=$scheduleid";
 
-	if (!mysql_query($sql, $con)){
-		echo mysql_error($con);
-	}
-}
-if(isset($_POST['delete'])) {
-	$sql="DELETE FROM alarm_schedule WHERE scheduleid=$scheduleid";
-	echo "Deleted $scheduleid Initiated!";
-
-	if (!mysql_query($sql, $con)){
-		echo mysql_error($con);
-	}	
+if (!mysql_query($sql, $con)){
+	echo mysql_error($con);
 }
 
 mysql_close($con);
