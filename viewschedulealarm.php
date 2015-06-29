@@ -514,14 +514,14 @@ include './header.php';
 							}
 
 							foreach ($schedule as $timeslot) {
-								$strTsId = $timeslot['scheduleid'];
+								$strTsId = "<tr id=\"" . $timeslot['scheduleid'] . "\">";
 								$strDayOfWeek = createDayOfWeek($timeslot['day_of_week']);
 
 								$strActivate = "<td><input type=\"text\" class=\"form-control time activateTime\" value=\"".$timeslot['activate_time']."\"></td>";
 								$strBrightness = "<td><input type=\"text\" class=\"form-control brightness\" value=\"".$timeslot['brightness']."\"></td>";
-								$strActions = "<td><a href=\"#\" onclick=\"updateEntry()\">Update</a>&nbsp|&nbsp<a href=\"#\" onclick=\"deleteEntry()\">Delete</a></td>";
+								$strActions = "<td><a href=\"#\" onclick=\"updateEntry(this)\">Update</a>&nbsp|&nbsp<a href=\"#\" onclick=\"deleteEntry(this)\">Delete</a></td>";
 								
-								$selectString = $strDayOfWeek.$strActivate.$strBrightness.$strActions."</tr>";
+								$selectString = $strTsId.$strDayOfWeek.$strActivate.$strBrightness.$strActions."</tr>";
 								echo "$selectString";
 							}
 						?>
@@ -623,36 +623,6 @@ function newEntry() {
 	}
 }
 
-function newEntryOld() {
-	var div = document.getElementsByTagName("tbody");
-	 
-	for ( var i = 0; i < div.length; i++ ) {
-		var node = document.createElement("tr");
-		div[i].appendChild(node);
-	    for ( var e = 0; e < elems.length; e++ ) {
-	        node.appendChild( elems[e].cloneNode(true) );
-
-	        if (e == elems.length - 1) {
-	        	for ( var j = 0; j < actions.length; j++ ) {
-	        		node.lastChild.appendChild( actions[j].cloneNode(true) );
-
-	        		var childElem = node.lastChild.lastChild;
-	        		if (childElem.nodeName.toLowerCase() === "a") {
-	        			childElem.setAttribute('href', '#');
-
-	        			if (childElem.textContent === "Add") {
-	        				childElem.setAttribute('onclick', 'addNewEntry(this)');
-	        			}
-	        			if (childElem.textContent === "Cancel") {
-	        				childElem.setAttribute('onclick', 'cancelNewEntry(this)');
-	        			}
-	        		}
-	        	}
-	        };
-	    }
-	}
-}
-
 function loadXMLDoc() {
 	var xmlhttp;
 	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -674,16 +644,24 @@ function loadXMLDoc() {
 	xmlhttp.send("fname=Henry&lname=Ford");	
 }
 
-var clusterId, activateTime, brightness, dayOfWeekStr;
+var clusterId, activateTime, brightness, dayOfWeekStr, scheduleId;
+
+function getEntryValues (elemid) {
+	var parent = elemid.parentNode;
+	var rowElem = parent.parentNode.childNodes;
+
+	clusterId = <?php echo $_GET['clusterid'] ?>;
+	activateTime = rowElem[1].childNodes[0].value;
+	brightness = rowElem[2].childNodes[0].value;
+	dayOfWeekStr = rowElem[0].childNodes[0].value;	
+}
+
 function addNewEntry (elemid) {
 	var parent = elemid.parentNode;
 	var rowElem = parent.parentNode.childNodes;
 	var kids = parent.childNodes;
 
-	clusterId = <?php echo $_GET['clusterid'] ?>;
-	activateTime = rowElem[1].childNodes[0].value;
-	brightness = rowElem[2].childNodes[0].value;
-	dayOfWeekStr = rowElem[0].childNodes[0].value;
+	getEntryValues(elemid);
 
 	var xmlhttp;
 	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -694,6 +672,9 @@ function addNewEntry (elemid) {
 	}
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			scheduleId = xmlhttp.responseText;
+			parent.parentNode.setAttribute('id', scheduleId);
+
 			for (var i = 0; i < kids.length; i++) {
 				if (kids[i].textContent === "Add") {
 					kids[i].innerHTML = "Update";
@@ -712,43 +693,6 @@ function addNewEntry (elemid) {
 	xmlhttp.send("clusterId="+clusterId+"&activateTime="+activateTime+"&brightness="+brightness+"&dayOfWeek="+dayOfWeekStr);	
 }
 
-function addNewEntryOld (elemid) {
-	var parent = elemid.parentNode;
-	var rowElem = parent.parentNode.childNodes;
-	var kids = parent.childNodes;
-
-	clusterId = <?php echo $_GET['clusterid'] ?>;
-	activateTime = rowElem[1].textContent;
-	brightness = rowElem[2].textContent;
-	dayOfWeekStr = rowElem[0].textContent;
-
-	var xmlhttp;
-	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-		xmlhttp=new XMLHttpRequest();
-	}
-	else {// code for IE6, IE5
-		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	xmlhttp.onreadystatechange=function() {
-		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-			for (var i = 0; i < kids.length; i++) {
-				if (kids[i].textContent === "Add") {
-					kids[i].innerHTML = "Update";
-					kids[i].setAttribute('onclick', 'updateEntry(this)');
-				}
-				if (kids[i].textContent === "Cancel") {
-					kids[i].innerHTML = "Delete";
-					kids[i].setAttribute('onclick', 'deleteEntry(this)');
-				}	        
-		    }
-		}
-	}
-
-	xmlhttp.open("POST","processaddschedulealarm.php",true);
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	xmlhttp.send("clusterId="+clusterId+"&activateTime="+activateTime+"&brightness="+brightness+"&dayOfWeek="+dayOfWeekStr);	    
-}
-
 function cancelNewEntry (elemid) {
 	var row = elemid.parentNode.parentNode;
 	var tbody = row.parentNode;
@@ -756,7 +700,7 @@ function cancelNewEntry (elemid) {
 	tbody.removeChild(row);
 }
 
-function updateEntry () {
+function updateEntry (elemid) {
 
 }
 

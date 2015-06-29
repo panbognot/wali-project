@@ -31,14 +31,27 @@ foreach ($daysofweek as $day) {
 	$dayctr++;
 }
 
-echo "$clusterid, $activate_time, $brightness, $day_of_week <Br>";
+$sql="SELECT MAX(scheduleid) AS scheduleid FROM alarm_schedule";
+$result=mysql_query($sql, $con);
+$row = mysql_fetch_array($result);
+$scheduleid = $row['scheduleid'];
+if (is_null($scheduleid))
+	$scheduleid = 1;
+else
+	$scheduleid++;
+mysql_free_result($result);
 
-$sql="INSERT INTO alarm_schedule (clusterid,activate_time,brightness,day_of_week) VALUES ($clusterid,'".$activate_time."',$brightness,$day_of_week)";
+//echo "$clusterid, $activate_time, $brightness, $day_of_week <Br>";
+
+$sql="INSERT INTO alarm_schedule (scheduleid,clusterid,activate_time,brightness,day_of_week) VALUES ($scheduleid,$clusterid,'".$activate_time."',$brightness,$day_of_week)";
 if (!mysql_query($sql, $con)){
 	echo mysql_error($con);
 }
-else
-	echo "|| schedule added ";
+else {
+	//echo "|| schedule added ";
+	echo "$scheduleid";
+}
+	
 
 
 
