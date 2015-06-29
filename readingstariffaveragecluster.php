@@ -248,23 +248,7 @@ include './header.php';
 			  </ul>
 			</li>		
 		</ul>
-		<div class="container-fluid">
-			<p>&nbsp;</p>
-			<div class="row">
-				<div class="panel panel-warning">
-					<div class="panel-heading"><small><strong>Power Readings</strong></small></div>
-					<div class="list-group">
-						<a href="./readstatus.php?bulbid=<?php echo $_GET['bulbid'];?>" class="list-group-item">Status</a>
-						<a href="./readings.php?bulbid=<?php echo $_GET['bulbid'];?>" class="list-group-item list-group-item-warning">Real RMS Power</a>
-						<a href="./readapparentpower.php?bulbid=<?php echo $_GET['bulbid'];?>" class="list-group-item">Apparent Power</a>
-						<a href="./readreactivepower.php?bulbid=<?php echo $_GET['bulbid'];?>" class="list-group-item">Reactive Power</a>
-						<a href="./readpowerfactor.php?bulbid=<?php echo $_GET['bulbid'];?>" class="list-group-item">Power Factor</a>
-						<a href="./readvoltage.php?bulbid=<?php echo $_GET['bulbid'];?>" class="list-group-item">RMS Voltage</a>
-						<a href="./readcurrent.php?bulbid=<?php echo $_GET['bulbid'];?>" class="list-group-item">RMS Current</a>
-					</div>
-				</div>
-			</div>
-		</div>
+		<!-- PANB this is where the other readings page used to be located -->
 	</div>
 	
 <div id="wrapContent">
@@ -277,7 +261,7 @@ include './header.php';
 					<a class="btn btn-default" href="./readingsday.php?bulbid=<?php echo $_GET['bulbid'];?>">Day</a>
 					<a class="btn btn-default" href="./readingsweek.php?bulbid=<?php echo $_GET['bulbid'];?>">Week</a>
 					<a class="btn btn-default" href="./readingsmonth.php?bulbid=<?php echo $_GET['bulbid'];?>">Month</a>
-					<a class="btn btn-default active" href="./readingstariffaverage.php?bulbid=<?php echo $_GET['bulbid'];?>">Monthly Average</a>
+					<a class="btn btn-default active" href="./readingstariffaveragecluster.php?bulbid=<?php echo $_GET['bulbid'];?>">Monthly Average</a>
 				</div>
 				<div id="chart"></div>
 
@@ -402,9 +386,7 @@ include './header.php';
 	for ($i=0; $i<12; $i++) {
 		$MonthlyAveragePower[$i] = 0;
 	}
-	
-	//sql here
-	//$sql="SELECT bulbid, Year(timestamp) as year, Month(timestamp) as month, Sum(va * pf) As total_watts FROM poweranalyzer WHERE bulbid=".$_GET['bulbid']." AND YEAR(timestamp)=".$yearString." GROUP BY Year(timestamp), Month(timestamp)";
+	/*
 	$sql="SELECT
 			Year(timeinterval) as year, 
 			Month(timeinterval) - 1 as month, 
@@ -422,6 +404,34 @@ include './header.php';
 		GROUP BY
 			Year(timeinterval),
 			Month(timeinterval);";
+	*/
+	$sql = "SELECT
+				Year(timeinterval) as year, 
+				Month(timeinterval) - 1 as month, 
+				sum(ave_va * ave_pf) as total_watts
+			FROM
+				(
+					select 
+						avg(va) as ave_va, 
+						avg(pf) as ave_pf, 
+						convert((min(timestamp) div 6000)*6000, datetime) as timeinterval
+					from poweranalyzer
+					where 
+						YEAR(timestamp) = 2015
+					AND 
+						bulbid IN (
+							SELECT DISTINCT bulb.bulbid as bulbid
+							FROM bulb
+							INNER JOIN cluster_bulb
+							ON cluster_bulb.bulbid = bulb.bulbid
+							WHERE cluster_bulb.clusterid = ".$_GET['clusterid']."
+						)	
+					group by timestamp div 6000
+				) as newdb
+			GROUP BY
+				Year(timeinterval),
+				Month(timeinterval)";
+
 	$result=mysql_query($sql);
 
 	while($row = mysql_fetch_array($result)) {
@@ -454,7 +464,7 @@ $(function () {
             type: 'column'
         },
         title: {
-            text: "Monthly Average Power Consumption for "+"<strong><?php echo $bulbsArray[$_GET['bulbid'] - 1]['name'];?></strong>"
+            text: "Monthly Average Power Consumption for "+"<strong><?php echo $clustersArray[$_GET['clusterid'] - 1]['name'];?></strong>"
         },
         subtitle: {
             text: 'Source: Project ilaw'
@@ -496,7 +506,7 @@ $(function () {
             }
         },
         series: [{
-            name: "<strong><?php echo $bulbsArray[$_GET['bulbid'] - 1]['name'];?></strong>",
+            name: "<strong><?php echo $clustersArray[$_GET['clusterid'] - 1]['name'];?></strong>",
             //data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
 			data: datamonthlyave,
 			color: '#FF9900'
@@ -510,7 +520,7 @@ function chartMonthlyCost() {
             type: 'column'
         },
         title: {
-            text: "Monthly Average Cost for "+"<strong><?php echo $bulbsArray[$_GET['bulbid'] - 1]['name'];?></strong>"
+            text: "Monthly Average Cost for "+"<strong><?php echo $clustersArray[$_GET['clusterid'] - 1]['name'];?></strong>"
         },
         subtitle: {
             text: 'Source: Project ilaw'
@@ -552,7 +562,7 @@ function chartMonthlyCost() {
             }
         },
         series: [{
-            name: "<strong><?php echo $bulbsArray[$_GET['bulbid'] - 1]['name'];?></strong>",
+            name: "<strong><?php echo $clustersArray[$_GET['clusterid'] - 1]['name'];?></strong>",
             //data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
 			data: datamonthlycost,
 			color: '#9D9D9D'
