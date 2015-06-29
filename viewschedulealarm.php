@@ -644,16 +644,19 @@ function loadXMLDoc() {
 	xmlhttp.send("fname=Henry&lname=Ford");	
 }
 
-var clusterId, activateTime, brightness, dayOfWeekStr, scheduleId;
+var clusterId, activateTime, brightness, dayOfWeekStr, scheduleId, rowId;
 
 function getEntryValues (elemid) {
 	var parent = elemid.parentNode;
 	var rowElem = parent.parentNode.childNodes;
+	var row = parent.parentNode;
 
 	clusterId = <?php echo $_GET['clusterid'] ?>;
 	activateTime = rowElem[1].childNodes[0].value;
 	brightness = rowElem[2].childNodes[0].value;
 	dayOfWeekStr = rowElem[0].childNodes[0].value;	
+
+	rowId = row.getAttribute("id");
 }
 
 function addNewEntry (elemid) {
@@ -701,7 +704,43 @@ function cancelNewEntry (elemid) {
 }
 
 function updateEntry (elemid) {
+	var parent = elemid.parentNode;
+	var rowElem = parent.parentNode.childNodes;
+	var kids = parent.childNodes;
 
+	getEntryValues(elemid);
+
+	var xmlhttp;
+	if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+		xmlhttp=new XMLHttpRequest();
+	}
+	else {// code for IE6, IE5
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			alert("Updated! rowId=" + rowId + ",activateTime=" + activateTime + ",brightness" + brightness + ",dayOfWeekStr=" + dayOfWeekStr);
+			/*
+			scheduleId = xmlhttp.responseText;
+			parent.parentNode.setAttribute('id', scheduleId);
+
+			for (var i = 0; i < kids.length; i++) {
+				if (kids[i].textContent === "Add") {
+					kids[i].innerHTML = "Update";
+					kids[i].setAttribute('onclick', 'updateEntry(this)');
+				}
+				if (kids[i].textContent === "Cancel") {
+					kids[i].innerHTML = "Delete";
+					kids[i].setAttribute('onclick', 'deleteEntry(this)');
+				}	        
+		    }
+			*/
+		}
+	}
+
+	xmlhttp.open("POST","schedulealarmDB.php",true);
+	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xmlhttp.send("scheduleId="+rowId+"&activateTime="+activateTime+"&brightness="+brightness+"&dayOfWeek="+dayOfWeekStr);
 }
 
 function deleteEntry () {
