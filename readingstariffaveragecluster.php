@@ -386,63 +386,56 @@ include './header.php';
 	for ($i=0; $i<12; $i++) {
 		$MonthlyAveragePower[$i] = 0;
 	}
-	/*
-	$sql="SELECT
-			Year(timeinterval) as year, 
-			Month(timeinterval) - 1 as month, 
-			sum(ave_va * ave_pf) as total_watts
-		FROM
-			(
-			select 
-				avg(va) as ave_va, 
-				avg(pf) as ave_pf, 
-				convert((min(timestamp) div 6000)*6000, datetime) as timeinterval
-			from poweranalyzer
-			where bulbid = ".$_GET['bulbid']." AND YEAR(timestamp) = ".$yearString."
-			group by timestamp div 6000
-			) as newdb
-		GROUP BY
-			Year(timeinterval),
-			Month(timeinterval);";
-	*/
-	$sql = "SELECT
+
+	$sql = "SELECT DISTINCT bulb.bulbid as bulbid
+			FROM bulb
+			INNER JOIN cluster_bulb
+			ON cluster_bulb.bulbid = bulb.bulbid
+			WHERE cluster_bulb.clusterid = ".$_GET['clusterid'];
+
+	$result=mysql_query($sql);
+
+	$bulbCtr = 0;
+	$tempBulbCluster;
+	while($row = mysql_fetch_array($result)) {
+		$tempBulbCluster[$bulbCtr]['bulbid'] = $row['bulbid'];
+		$bulbCtr++;		
+	}	
+
+	//echo json_encode($tempBulbCluster);
+
+	foreach ($tempBulbCluster as $bulbCluster) {
+		$sql="SELECT
 				Year(timeinterval) as year, 
 				Month(timeinterval) - 1 as month, 
 				sum(ave_va * ave_pf) as total_watts
 			FROM
 				(
-					select 
-						avg(va) as ave_va, 
-						avg(pf) as ave_pf, 
-						convert((min(timestamp) div 6000)*6000, datetime) as timeinterval
-					from poweranalyzer
-					where 
-						YEAR(timestamp) = 2015
-					AND 
-						bulbid IN (
-							SELECT DISTINCT bulb.bulbid as bulbid
-							FROM bulb
-							INNER JOIN cluster_bulb
-							ON cluster_bulb.bulbid = bulb.bulbid
-							WHERE cluster_bulb.clusterid = ".$_GET['clusterid']."
-						)	
-					group by timestamp div 6000
+				select 
+					avg(va) as ave_va, 
+					avg(pf) as ave_pf, 
+					convert((min(timestamp) div 6000)*6000, datetime) as timeinterval
+				from poweranalyzer
+				where bulbid = ".$bulbCluster['bulbid']." AND YEAR(timestamp) = ".$yearString."
+				group by timestamp div 6000
 				) as newdb
 			GROUP BY
 				Year(timeinterval),
-				Month(timeinterval)";
+				Month(timeinterval);";
 
-	$result=mysql_query($sql);
+		$result=mysql_query($sql);
 
-	while($row = mysql_fetch_array($result)) {
-		$tempMonth = $row['month'];
+		while($row = mysql_fetch_array($result)) {
+			$tempMonth = $row['month'];
 
-		if ($tempMonth != NULL) {
-			$ctr = $row['month'];
-			$MonthlyAveragePower[$ctr] = $row['total_watts'];
-		}
-	}	
+			if ($tempMonth != NULL) {
+				$ctr = $row['month'];
+				$MonthlyAveragePower[$ctr] += (float) $row['total_watts'];
+			}
+		}	
 
+		//echo json_encode($MonthlyAveragePower);
+	}
 ?>
 <script>
 var monthlyave = <?php echo json_encode($MonthlyAveragePower);?>;
