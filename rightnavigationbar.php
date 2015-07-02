@@ -110,20 +110,16 @@
       <a href="#" class="list-group-item <?php echo $groupWarningSchedules; ?> dropdown-toggle" data-toggle="dropdown">
         <span class="glyphicon glyphicon-calendar"></span>
         Schedules
-        <span class="badge pull-right <?php echo $badgeWarningSchedules; ?>"><?php echo $countSchedules; ?></span>
+        <span class="badge pull-right <?php echo $badgeWarningSchedules; ?>"><?php echo $countClusters; ?></span>
       </a>
       <ul class="dropdown-menu">
         <li role="presentation" class="dropdown-header">Events</li>
         <?php
-          $dateNow = date("Y-m-d");
-          for($i = 0; $i < $countSchedules; $i++) {
-            if ($schedulesArray[$i]['end_date'] > $dateNow)
-              echo "<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"./viewschedule.php?scheduleid=".$schedulesArray[$i]['scheduleid']."\">On ".$schedulesArray[$i]['start_date']." to ".$schedulesArray[$i]['end_date']." from ".$schedulesArray[$i]['start_time']." to ".$schedulesArray[$i]['end_time']."</a></li>";
+          for($i = 0; $i < $countClusters; $i++) {
+            echo "<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"./viewschedulealarm.php?clusterid=".$clustersArray[$i]['clusterid']."\">".$clustersArray[$i]['name']."</a></li>";
           }
-        ?>
-        <li role="presentation" class="divider"></li>
-        <li role="presentation"><a role="menuitem" tabindex="-1" href="./addschedule.php">Schedule an Event</a></li>
-          </ul>
+        ?>        
+      </ul>
     </li>   
   </ul>
 </div>
