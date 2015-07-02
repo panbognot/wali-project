@@ -76,7 +76,7 @@
     ?>
       <a href="#" class="list-group-item <?php echo $groupWarningReportsIndividual; ?> dropdown-toggle" data-toggle="dropdown">
         <span class="glyphicon glyphicon-signal"></span>
-        Reports
+        Individual Lamp Reports
         <span class="badge pull-right <?php echo $badgeWarningReportsIndividual; ?>"><?php echo $countReadings; ?></span>
       </a>
       <ul class="dropdown-menu">
@@ -86,10 +86,31 @@
             echo "<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"./readings.php?bulbid=".$readingsArray[$i]['bulbid']."\">".$readingsArray[$i]['name']."</a></li>";
           }
         ?>
+        <!--
         <li role="presentation" class="divider"></li>
         <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Customize a Report</a></li>
-          </ul>
+        -->
+      </ul>
     </li>
+    <li id="readingsCluster" class="dropdown">
+      <a href="#" class="list-group-item <?php echo $groupWarningReportsCluster; ?> dropdown-toggle" data-toggle="dropdown">
+        <span class="glyphicon glyphicon-signal"></span>
+        Cluster Reports
+        <span class="badge pull-right <?php echo $badgeWarningReportsCluster; ?>"><?php echo $countClusters; ?></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li role="presentation" class="dropdown-header">Consumption Reports</li>
+        <?php
+          for($i = 0; $i < $countClusters; $i++) {
+            echo "<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"./readingstariffaveragecluster.php?clusterid=".$clustersArray[$i]['clusterid']."\">".$clustersArray[$i]['name']."</a></li>";
+          }
+        ?>
+        <!--
+        <li role="presentation" class="divider"></li>
+        <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Customize a Report</a></li>
+        -->
+      </ul>
+    </li>    
     <li id="schedules" class="dropdown">
     <?php
       $sql="SELECT scheduleid, start_date, end_date, start_time, end_time FROM schedule";
