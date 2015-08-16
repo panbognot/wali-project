@@ -235,7 +235,7 @@ include './rightnavigationbar.php';
 			    <span class="input-group-addon">Watts</span>
 			  </div>
 
-			  <h2>Power Consumption in Bars</h2>
+			  <h2>Power Consumption for <?php echo date("M Y") ?></h2>
 			  <a href="#" data-toggle="tooltip" title="Enabling the Auto Light Intesity Adjustment will give the user less worries in making sure that the power consumption for the month will not exceed the target consumption. This feature recalculates how much reduction in light intensity should be executed should the Predicted Consumption exceed the Target Consumption. Predicted Consumption is calculated based on the cluster schedules set by the user.">
 			  	<label class="checkbox-inline">
 			  		<input type="checkbox" value="">Enable Auto Light Intensity Adjustment (ALIA) [to be implemented]
@@ -273,11 +273,71 @@ include './rightnavigationbar.php';
 </div>
 
 </body>
+<?php
+	$date = new DateTime();
+	$RealPowerReadingArray = array();
+	$interval = new DateInterval('P1D');
+	
+	$dateString = date_format($date, 'Y-m-d');
+	$yearString = date_format($date, 'Y');
+	$monthString = date_format($date, 'm');
+	$dayString = date_format($date, 'd');	
+	
+	$MonthlyAveragePower;
+	for ($i=0; $i<12; $i++) {
+		$MonthlyAveragePower[$i] = 0;
+	}
 
+	$sql = "SELECT bulbid FROM bulb;";
+
+	$result=mysql_query($sql);
+
+	$bulbCtr = 0;
+	$tempBulbAll;
+	while($row = mysql_fetch_array($result)) {
+		$tempBulbAll[$bulbCtr]['bulbid'] = $row['bulbid'];
+		$bulbCtr++;		
+	}	
+
+	foreach ($tempBulbAll as $bulbAll) {
+		$sql="SELECT
+				Year(timeinterval) as year, 
+				Month(timeinterval) - 1 as month, 
+				sum(abs(ave_va * ave_pf)) as total_watts
+			FROM
+				(
+				select 
+					avg(va) as ave_va, 
+					avg(pf) as ave_pf, 
+					convert((min(timestamp) div 6000)*6000, datetime) as timeinterval
+				from poweranalyzer
+				where bulbid = ".$bulbAll['bulbid']." AND 
+					timestamp > ".date("Y-m")."
+				group by timestamp div 6000
+				) as newdb
+			GROUP BY
+				Year(timeinterval),
+				Month(timeinterval);";
+
+		$result=mysql_query($sql);
+
+		while($row = mysql_fetch_array($result)) {
+			$tempMonth = $row['month'];
+
+			if ($tempMonth != NULL) {
+				$ctr = $row['month'];
+				$MonthlyAveragePower[$ctr] += (float) $row['total_watts'];
+			}
+		}	
+
+		//echo json_encode($MonthlyAveragePower);
+	}
+?>
 <script type="text/javascript">
 var pcTarget = 5000;
 var pcCurrent = 2000;
 var pcPredicted = 4500;
+var testConsumption = <?php echo json_encode($MonthlyAveragePower); ?>;
 
 function refreshProgressBars() {
   var percentageTarget = 0,

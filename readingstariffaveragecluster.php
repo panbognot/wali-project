@@ -287,7 +287,7 @@ include './rightnavigationbar.php';
 		$sql="SELECT
 				Year(timeinterval) as year, 
 				Month(timeinterval) - 1 as month, 
-				sum(ave_va * ave_pf) as total_watts
+				sum(abs(ave_va * ave_pf)) as total_watts
 			FROM
 				(
 				select 
