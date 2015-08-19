@@ -243,16 +243,22 @@ include './rightnavigationbar.php';
 			  </a>
 			  <Br><Br>
 			  <div class="progress">
-			    <div id="consumptionTarget" class="progress-bar progress-bar-warning" role="progressbar" style="width:40%">
-			    </div>
+			  	<a href="#" data-toggle="tooltip" data-placement="auto" title="Hooray!">
+				    <div id="consumptionTarget" class="progress-bar progress-bar-warning" role="progressbar" style="width:40%">
+				    </div>
+				</a>
 			  </div>
 			  <div class="progress">
-			    <div id="consumptionCurrent" class="progress-bar progress-bar-info" role="progressbar" style="width:50%">
-			    </div>
+			  	<a href="#" data-toggle="tooltip" data-placement="auto" title="Hooray!">
+				    <div id="consumptionCurrent" class="progress-bar progress-bar-info" role="progressbar" style="width:50%">
+				    </div>
+				</a>
 			  </div>
 			  <div class="progress">
-			    <div id="consumptionPredicted" class="progress-bar progress-bar-success" role="progressbar" style="width:60%">
-			    </div>
+			  	<a href="#" data-toggle="tooltip" data-placement="auto" title="Hooray!">
+				    <div id="consumptionPredicted" class="progress-bar progress-bar-success" role="progressbar" style="width:60%">
+				    </div>
+				</a>
 			  </div>
 			 
 			  <div class="jumbotron">
@@ -340,6 +346,10 @@ var pcPredicted = 4500;
 var testDate = "<?php echo date("m"); ?>";
 var testConsumption = <?php echo json_encode($MonthlyAveragePower[(int)(date("m")) - 1]); ?>;
 
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();   
+});
+
 function refreshProgressBars() {
   var percentageTarget = 0,
       percentageCurrent = 0,
@@ -355,13 +365,15 @@ function refreshProgressBars() {
   if (parseInt(pcTarget) >= parseInt(pcPredicted)) {
     maxValue = pcTarget;
     $("#consumptionPredicted").attr("class", "progress-bar progress-bar-success");
-    $("#consumptionPredicted").text("Predicted Consumption: " + pcPredicted + " Watts");
+    $("#consumptionPredicted").text("Predicted Consumption: " + parseInt(pcPredicted) + " Watts");
+    $("#consumptionPredicted").parent().attr("title", "Predicted Consumption: " + parseInt(pcPredicted) + " Watts");
     $(".jumbotron").hide();
   }
   else {
     maxValue = pcPredicted;
     $("#consumptionPredicted").attr("class", "progress-bar progress-bar-danger");
-    $("#consumptionPredicted").text("Predicted Consumption: " + pcPredicted + " Watts (already Exceeds Target!)");
+    $("#consumptionPredicted").text("Predicted Consumption: " + parseInt(pcPredicted) + " Watts (already Exceeds Target!)");
+    $("#consumptionPredicted").parent().attr("title", "Predicted Consumption: " + parseInt(pcPredicted) + " Watts (already Exceeds Target!)");
 
     ratioPredOverTarg = (((pcPredicted/pcTarget)-1)*100);
 
@@ -376,14 +388,16 @@ function refreshProgressBars() {
 
   if (parseInt(pcTarget) < parseInt(pcCurrent)) {
     $("#consumptionTarget").attr("class", "progress-bar progress-bar-danger");
-    $("#consumptionTarget").text("Target Consumption: " + pcTarget + " Watts (impossible)");
+    $("#consumptionTarget").text("Target Consumption: " + parseInt(pcTarget) + " Watts (impossible)");
+    $("#consumptionTarget").parent().attr("title", "Target Consumption: " + parseInt(pcTarget) + " Watts (impossible)");
 
     $("#intensityID").text("Not Possible to set Target Consumption to Less than your Current Consumption.");
     $(".jumbotron").show();
   }
   else {
     $("#consumptionTarget").attr("class", "progress-bar progress-bar-warning");
-    $("#consumptionTarget").text("Target Consumption: " + pcTarget + " Watts");
+    $("#consumptionTarget").text("Target Consumption: " + parseInt(pcTarget) + " Watts");
+    $("#consumptionTarget").parent().attr("title", "Target Consumption: " + parseInt(pcTarget) + " Watts");
   };
 
   percentageTarget = (pcTarget / maxValue) * 100;
@@ -392,7 +406,8 @@ function refreshProgressBars() {
 
   //Texts
   //$("#consumptionTarget").text("Target Consumption: " + pcTarget + " Watts");
-  $("#consumptionCurrent").text("Current Consumption: " + pcCurrent + " Watts");
+  $("#consumptionCurrent").text("Current Consumption: " + parseInt(pcCurrent) + " Watts");
+  $("#consumptionCurrent").parent().attr("title", "Current Consumption: " + parseInt(pcCurrent) + " Watts");
 
   //Widths
   $("#consumptionTarget").css("width", percentageTarget + "%");
