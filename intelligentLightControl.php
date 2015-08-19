@@ -312,7 +312,7 @@ include './rightnavigationbar.php';
 					convert((min(timestamp) div 6000)*6000, datetime) as timeinterval
 				from poweranalyzer
 				where bulbid = ".$bulbAll['bulbid']." AND 
-					timestamp > ".date("Y-m")."
+					timestamp > '".date("Y-m")."'
 				group by timestamp div 6000
 				) as newdb
 			GROUP BY
@@ -335,9 +335,10 @@ include './rightnavigationbar.php';
 ?>
 <script type="text/javascript">
 var pcTarget = 5000;
-var pcCurrent = 2000;
+var pcCurrent = <?php echo json_encode($MonthlyAveragePower[(int)(date("m")) - 1]); ?>;
 var pcPredicted = 4500;
-var testConsumption = <?php echo json_encode($MonthlyAveragePower); ?>;
+var testDate = "<?php echo date("m"); ?>";
+var testConsumption = <?php echo json_encode($MonthlyAveragePower[(int)(date("m")) - 1]); ?>;
 
 function refreshProgressBars() {
   var percentageTarget = 0,
