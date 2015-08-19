@@ -48,7 +48,7 @@ mysql_free_result($result);
 		
 		<!-- nav-bar with footer-->
 		<link href="./css/schedule.css" rel="stylesheet">
-	<title>View Schedule | iLaw</title>
+	<title>Intelligent Light Allocation | iLaw</title>
 	<style>
 		html, body, #map-canvas {
         	height: 100%;

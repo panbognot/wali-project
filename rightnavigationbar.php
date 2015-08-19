@@ -145,7 +145,7 @@
     <li id="intelliLightControl" class="dropdown">
       <a href="intelligentLightControl.php" class="list-group-item dropdown-toggle">
         <span class="glyphicon glyphicon-calendar"></span>
-        Intelligent Light Control
+        Intelligent Light Allocation
         <span class="badge pull-right">New</span>
       </a>
     </li> 

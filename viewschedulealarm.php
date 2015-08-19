@@ -542,6 +542,8 @@ function addNewEntry (elemid) {
 					kids[i].setAttribute('onclick', 'deleteEntry(this)');
 				}	        
 		    }
+
+		    calculatePowerConsumption();
 		}
 	}
 
@@ -577,7 +579,7 @@ function updateEntry (elemid) {
 	}
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-			alert("Updated! rowId=" + rowId + ",activateTime=" + activateTime + ",brightness" + brightness + ",dayOfWeekStr=" + dayOfWeekStr);
+			calculatePowerConsumption();
 		}
 	}
 
@@ -602,9 +604,8 @@ function deleteEntry (elemid) {
 	}
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-			//alert("Updated! rowId=" + rowId + ",activateTime=" + activateTime + ",brightness" + brightness + ",dayOfWeekStr=" + dayOfWeekStr);
-			alert(xmlhttp.responseText);
 			removeEntry(elemid);
+			calculatePowerConsumption();
 		}
 	}
 
@@ -612,6 +613,21 @@ function deleteEntry (elemid) {
 	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 	xmlhttp.send("delete&scheduleId="+rowId);
 }
+
+function calculatePowerConsumption() {
+    $.ajax({url: "viewschedulealarmdata.php?clusterid=" + <?php echo $_GET['clusterid'] ?>, success: function(result){
+    	testConsumption = JSON.parse(result);
+    	var dayConsumption = parseInt(testConsumption.dayConsumption);
+        var monthConsumption = parseInt(testConsumption.monthConsumption);
+        
+        $("#dailyPowerConsumption").text("Average Daily Power Consumption (Watt-Hours): " + dayConsumption);
+        $("#monthlyPowerConsumption").text("Average Monthly Power Consumption (Watt-Hours): " + monthConsumption);
+    }});
+}
+
+$(document).ready(function(){
+	calculatePowerConsumption();
+});
 
 </script>
 

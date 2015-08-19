@@ -9,17 +9,14 @@ $password="raspberry"; // Mysql password
 $db_name="ilaw"; // Database name 
 $tbl_name="bulb"; // Table name 
 
-//Right Navigation Menu Highlights
-$groupWarningMaps = "";
-$badgeWarningMaps = "";
-$groupWarningLights = "";
-$badgeWarningLights = "";
-$groupWarningReportsIndividual = "";
-$badgeWarningReportsIndividual = "";
-$groupWarningReportsCluster = "";
-$badgeWarningReportsCluster = "";
-$groupWarningSchedules = "";
-$badgeWarningSchedules = "";
+$clusterid;
+if(isset($_GET['clusterid'])) {
+	$clusterid = $_GET['clusterid'];
+}
+else {
+	echo "Error: No clusterid<Br>";
+	return;
+}
 
 // Connect to server and select databse.
 $con=mysql_connect("$host", "$username", "$password")or die("cannot connect"); 
@@ -48,18 +45,30 @@ for ($i=0; $i<12; $i++) {
 	$MonthlyAveragePower[$i] = 0;
 }
 
-$sql = "SELECT bulbid FROM bulb;";
+$sql = "SELECT DISTINCT bulb.bulbid as bulbid
+		FROM bulb
+		INNER JOIN cluster_bulb
+		ON cluster_bulb.bulbid = bulb.bulbid
+		WHERE cluster_bulb.clusterid = ".$clusterid;
 
 $result=mysql_query($sql);
 
 $bulbCtr = 0;
-$tempBulbAll;
+$tempBulbCluster = null;
 while($row = mysql_fetch_array($result)) {
-	$tempBulbAll[$bulbCtr]['bulbid'] = $row['bulbid'];
+	$tempBulbCluster[$bulbCtr]['bulbid'] = $row['bulbid'];
 	$bulbCtr++;		
 }	
 
-foreach ($tempBulbAll as $bulbAll) {
+//echo json_encode($tempBulbCluster);
+if ($tempBulbCluster == null) {
+	$temp['dayConsumption'] = 0;
+	$temp['monthConsumption'] = 0;
+	echo json_encode($temp);
+	return;
+}
+
+foreach ($tempBulbCluster as $bulbCluster) {
 	$sql="SELECT
 			Year(timeinterval) as year, 
 			Month(timeinterval) - 1 as month, 
@@ -71,8 +80,7 @@ foreach ($tempBulbAll as $bulbAll) {
 				avg(pf) as ave_pf, 
 				convert((min(timestamp) div 6000)*6000, datetime) as timeinterval
 			from poweranalyzer
-			where bulbid = ".$bulbAll['bulbid']." AND 
-				timestamp > '".date("Y-m")."'
+			where bulbid = ".$bulbCluster['bulbid']." AND YEAR(timestamp) = ".$yearString."
 			group by timestamp div 6000
 			) as newdb
 		GROUP BY
@@ -89,6 +97,8 @@ foreach ($tempBulbAll as $bulbAll) {
 			$MonthlyAveragePower[$ctr] += (float) $row['total_watts'];
 		}
 	}	
+
+	//echo json_encode($MonthlyAveragePower);
 }
 
 $currentMonthConsumption = $MonthlyAveragePower[(int)(date("m")) - 1];
@@ -135,23 +145,26 @@ $totalWattHours = 0;
 $curMonth = date('n');
 $curYear  = date('Y');
 
-if ($curMonth == 12)
+if ($curMonth == 12) {
     $firstDayNextMonth = mktime(0, 0, 0, 0, 0, $curYear+1);
-else
+}
+else {
     $firstDayNextMonth = mktime(0, 0, 0, $curMonth+1, 1);
+}
 
-$daysTilNextMonth = ($firstDayNextMonth - mktime()) / (24 * 3600);
-//echo "Days left till next month: $daysTilNextMonth <Br><Br>";
+$firstDayCurrentMonth = mktime(0, 0, 0, $curMonth, 1);
+$totalDaysCurentMonth = ($firstDayNextMonth - $firstDayCurrentMonth) / (24 * 3600);
+//echo "Total Days of the month: $totalDaysCurentMonth <Br><Br>";
 
 $ctr=0;
 $schedPerCluster;
-foreach ($clusterAll as $cluster) {
+//foreach ($clusterAll as $cluster) {
 	$sql="SELECT 
 			activate_time, brightness, day_of_week 
 		  from 
 		  	alarm_schedule 
 		  where 
-		  	clusterid = " . $cluster['clusterid'] .
+		  	clusterid = " . $clusterid .
 		  " order by activate_time asc";
 
 	$result=mysql_query($sql);
@@ -204,16 +217,17 @@ foreach ($clusterAll as $cluster) {
 	//echo "Total Average Predicted Watt-Hours for the Cluster for this Month: " . 
 	//	($totalClusterWattHours * $bulbPerCluster[$ctr]['bulbCount'] * $daysTilNextMonth) . "<Br>";
 
-	$totalWattHours += $totalClusterWattHours * $bulbPerCluster[$ctr]['bulbCount'] * $daysTilNextMonth;
+	//$totalWattHours += $totalClusterWattHours * $bulbPerCluster[$ctr]['bulbCount'] * $daysTilNextMonth;
+	$dailyConsumption = $totalClusterWattHours * $bulbPerCluster[$ctr]['bulbCount'];
 
 	$ctr++;
-}
+//}
 
-$totalWattHours += $currentMonthConsumption;
+$totalWattHours += $dailyConsumption * $totalDaysCurentMonth;
 //echo "<Br>Total Average Predicted Watt-Hours for the Whole System: $totalWattHours <Br>";
 //echo $totalWattHours;
-$finalResults['current'] = $currentMonthConsumption;
-$finalResults['predicted'] = $totalWattHours;
+$finalResults['dayConsumption'] = $dailyConsumption;
+$finalResults['monthConsumption'] = $totalWattHours;
 echo json_encode($finalResults);
 
 ?>
