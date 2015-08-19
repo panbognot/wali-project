@@ -93,7 +93,7 @@ foreach ($tempBulbAll as $bulbAll) {
 
 $currentMonthConsumption = $MonthlyAveragePower[(int)(date("m")) - 1];
 
-echo "Current Power Consumption<Br>" . json_encode($currentMonthConsumption) . "<Br><Br>";
+//echo "Current Power Consumption<Br>" . json_encode($currentMonthConsumption) . "<Br><Br>";
 
 //Find number of bulb in a cluster
 $sql = "SELECT clusterid FROM cluster;";
@@ -127,7 +127,7 @@ foreach ($clusterAll as $cluster) {
 	}	
 }
 
-echo "Bulbs per Cluster<Br>" . json_encode($bulbPerCluster) . "<Br><Br>";
+//echo "Bulbs per Cluster<Br>" . json_encode($bulbPerCluster) . "<Br><Br>";
 
 $totalWattHours = 0;
 
@@ -141,7 +141,7 @@ else
     $firstDayNextMonth = mktime(0, 0, 0, $curMonth+1, 1);
 
 $daysTilNextMonth = ($firstDayNextMonth - mktime()) / (24 * 3600);
-echo "Days left till next month: $daysTilNextMonth <Br><Br>";
+//echo "Days left till next month: $daysTilNextMonth <Br><Br>";
 
 $ctr=0;
 $schedPerCluster;
@@ -165,8 +165,7 @@ foreach ($clusterAll as $cluster) {
 		$tempCtr++;
 	}
 
-	echo "Cluster ID: ".$cluster['clusterid'].", Sched: ".json_encode($tempSched)."<Br>";
-	//echo "Cluster ID: ".$cluster['clusterid']."<Br>";
+	//echo "Cluster ID: ".$cluster['clusterid'].", Sched: ".json_encode($tempSched)."<Br>";
 
 	$totalClusterWattHours = 0;
 	for ($i=0; $i < $tempCtr; $i++) {
@@ -200,10 +199,10 @@ foreach ($clusterAll as $cluster) {
 		$totalClusterWattHours += $wattHours;
 		//echo "Total Time=$timeOn, Watt Hours=$wattHours <Br>";
 	}
-	echo "Total Average Predicted Watt-Hours per day: $totalClusterWattHours <Br>";
-	echo "Total Average Predicted Watt-Hours per day for the Cluster: " . ($totalClusterWattHours * $bulbPerCluster[$ctr]['bulbCount']) . "<Br>";
-	echo "Total Average Predicted Watt-Hours for the Cluster for this Month: " . 
-		($totalClusterWattHours * $bulbPerCluster[$ctr]['bulbCount'] * $daysTilNextMonth) . "<Br>";
+	//echo "Total Average Predicted Watt-Hours per day: $totalClusterWattHours <Br>";
+	//echo "Total Average Predicted Watt-Hours per day for the Cluster: " . ($totalClusterWattHours * $bulbPerCluster[$ctr]['bulbCount']) . "<Br>";
+	//echo "Total Average Predicted Watt-Hours for the Cluster for this Month: " . 
+	//	($totalClusterWattHours * $bulbPerCluster[$ctr]['bulbCount'] * $daysTilNextMonth) . "<Br>";
 
 	$totalWattHours += $totalClusterWattHours * $bulbPerCluster[$ctr]['bulbCount'] * $daysTilNextMonth;
 
@@ -211,6 +210,7 @@ foreach ($clusterAll as $cluster) {
 }
 
 $totalWattHours += $currentMonthConsumption;
-echo "<Br>Total Average Predicted Watt-Hours per Whole System: $totalWattHours <Br>";
+//echo "<Br>Total Average Predicted Watt-Hours for the Whole System: $totalWattHours <Br>";
+echo $totalWattHours;
 
 ?>

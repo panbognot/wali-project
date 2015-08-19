@@ -219,20 +219,20 @@ include './rightnavigationbar.php';
 			  <h3>Power Consumption (PC) Values:</h3>
 			  <div class="input-group">
 			  	<span class="input-group-addon" id="basic-addon1">Target Consumption</span>
-			    <input id="targetPCid" type="text" class="form-control" placeholder="Enter your target Power Consumption" aria-label="Watts">
-			    <span class="input-group-addon">Watts</span>
+			    <input id="targetPCid" type="text" class="form-control" placeholder="Enter your target Power Consumption" aria-label="Watt-Hours">
+			    <span class="input-group-addon">Watt-Hours</span>
 			  </div>
 
 			  <div class="input-group">
 			  	<span class="input-group-addon" id="basic-addon1">Current Consumption</span>
-			    <input id="currentPCid" type="text" class="form-control" placeholder="Enter your Current Power Consumption" aria-label="Watts">
-			    <span class="input-group-addon">Watts</span>
+			    <input id="currentPCid" type="text" class="form-control" placeholder="Enter your Current Power Consumption" aria-label="Watt-Hours">
+			    <span class="input-group-addon">Watt-Hours</span>
 			  </div>
 
 			  <div class="input-group">
 			  	<span class="input-group-addon" id="basic-addon1">Predicted Consumption</span>
-			    <input id="predictedPCid" type="text" class="form-control" placeholder="Enter your Predicted Power Consumption" aria-label="Watts">
-			    <span class="input-group-addon">Watts</span>
+			    <input id="predictedPCid" type="text" class="form-control" placeholder="Enter your Predicted Power Consumption" aria-label="Watt-Hours">
+			    <span class="input-group-addon">Watt-Hours</span>
 			  </div>
 
 			  <h2>Power Consumption for <?php echo date("M Y") ?></h2>
@@ -340,15 +340,20 @@ include './rightnavigationbar.php';
 	}
 ?>
 <script type="text/javascript">
-var pcTarget = 5000;
+var pcTarget = 70000;
 var pcCurrent = <?php echo json_encode($MonthlyAveragePower[(int)(date("m")) - 1]); ?>;
-var pcPredicted = 4500;
+var pcPredicted;
 var testDate = "<?php echo date("m"); ?>";
 var testConsumption = <?php echo json_encode($MonthlyAveragePower[(int)(date("m")) - 1]); ?>;
 
-$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();   
-});
+function refreshPredictedPowerConsumption() {
+	//refreshes every 10 seconds
+	setTimeout(refreshPredictedPowerConsumption, 10000);
+    $.ajax({url: "intelligentLightControlData.php", success: function(result){
+        pcPredicted = parseInt(result);
+        refreshProgressBars();
+    }});
+}
 
 function refreshProgressBars() {
   var percentageTarget = 0,
@@ -365,15 +370,15 @@ function refreshProgressBars() {
   if (parseInt(pcTarget) >= parseInt(pcPredicted)) {
     maxValue = pcTarget;
     $("#consumptionPredicted").attr("class", "progress-bar progress-bar-success");
-    $("#consumptionPredicted").text("Predicted Consumption: " + parseInt(pcPredicted) + " Watts");
-    $("#consumptionPredicted").parent().attr("title", "Predicted Consumption: " + parseInt(pcPredicted) + " Watts");
+    $("#consumptionPredicted").text("Predicted Consumption: " + parseInt(pcPredicted) + " Watt-Hours");
+    $("#consumptionPredicted").parent().attr("title", "Predicted Consumption: " + parseInt(pcPredicted) + " Watt-Hours");
     $(".jumbotron").hide();
   }
   else {
     maxValue = pcPredicted;
     $("#consumptionPredicted").attr("class", "progress-bar progress-bar-danger");
-    $("#consumptionPredicted").text("Predicted Consumption: " + parseInt(pcPredicted) + " Watts (already Exceeds Target!)");
-    $("#consumptionPredicted").parent().attr("title", "Predicted Consumption: " + parseInt(pcPredicted) + " Watts (already Exceeds Target!)");
+    $("#consumptionPredicted").text("Predicted Consumption: " + parseInt(pcPredicted) + " Watt-Hours (already Exceeds Target!)");
+    $("#consumptionPredicted").parent().attr("title", "Predicted Consumption: " + parseInt(pcPredicted) + " Watt-Hours (already Exceeds Target!)");
 
     ratioPredOverTarg = (((pcPredicted/pcTarget)-1)*100);
 
@@ -388,16 +393,16 @@ function refreshProgressBars() {
 
   if (parseInt(pcTarget) < parseInt(pcCurrent)) {
     $("#consumptionTarget").attr("class", "progress-bar progress-bar-danger");
-    $("#consumptionTarget").text("Target Consumption: " + parseInt(pcTarget) + " Watts (impossible)");
-    $("#consumptionTarget").parent().attr("title", "Target Consumption: " + parseInt(pcTarget) + " Watts (impossible)");
+    $("#consumptionTarget").text("Target Consumption: " + parseInt(pcTarget) + " Watt-Hours (impossible)");
+    $("#consumptionTarget").parent().attr("title", "Target Consumption: " + parseInt(pcTarget) + " Watt-Hours (impossible)");
 
     $("#intensityID").text("Not Possible to set Target Consumption to Less than your Current Consumption.");
     $(".jumbotron").show();
   }
   else {
     $("#consumptionTarget").attr("class", "progress-bar progress-bar-warning");
-    $("#consumptionTarget").text("Target Consumption: " + parseInt(pcTarget) + " Watts");
-    $("#consumptionTarget").parent().attr("title", "Target Consumption: " + parseInt(pcTarget) + " Watts");
+    $("#consumptionTarget").text("Target Consumption: " + parseInt(pcTarget) + " Watt-Hours");
+    $("#consumptionTarget").parent().attr("title", "Target Consumption: " + parseInt(pcTarget) + " Watt-Hours");
   };
 
   percentageTarget = (pcTarget / maxValue) * 100;
@@ -405,9 +410,9 @@ function refreshProgressBars() {
   percentagePredicted = (pcPredicted / maxValue) * 100;
 
   //Texts
-  //$("#consumptionTarget").text("Target Consumption: " + pcTarget + " Watts");
-  $("#consumptionCurrent").text("Current Consumption: " + parseInt(pcCurrent) + " Watts");
-  $("#consumptionCurrent").parent().attr("title", "Current Consumption: " + parseInt(pcCurrent) + " Watts");
+  //$("#consumptionTarget").text("Target Consumption: " + pcTarget + " Watt-Hours");
+  $("#consumptionCurrent").text("Current Consumption: " + parseInt(pcCurrent) + " Watt-Hours");
+  $("#consumptionCurrent").parent().attr("title", "Current Consumption: " + parseInt(pcCurrent) + " Watt-Hours");
 
   //Widths
   $("#consumptionTarget").css("width", percentageTarget + "%");
@@ -482,8 +487,10 @@ $("#predictedPCid").blur(function(){
 });
 
 $(document).ready(function(){
-  $(".jumbotron").hide();
-  refreshProgressBars();
+	$('[data-toggle="tooltip"]').tooltip(); 
+	$(".jumbotron").hide();
+	refreshPredictedPowerConsumption();
+	//refreshProgressBars();
 });
 </script>
 
