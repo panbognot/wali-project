@@ -211,6 +211,9 @@ foreach ($clusterAll as $cluster) {
 
 $totalWattHours += $currentMonthConsumption;
 //echo "<Br>Total Average Predicted Watt-Hours for the Whole System: $totalWattHours <Br>";
-echo $totalWattHours;
+//echo $totalWattHours;
+$finalResults['current'] = $currentMonthConsumption;
+$finalResults['predicted'] = $totalWattHours;
+echo json_encode($finalResults);
 
 ?>

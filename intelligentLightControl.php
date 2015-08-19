@@ -341,16 +341,18 @@ include './rightnavigationbar.php';
 ?>
 <script type="text/javascript">
 var pcTarget = 70000;
-var pcCurrent = <?php echo json_encode($MonthlyAveragePower[(int)(date("m")) - 1]); ?>;
+var pcCurrent;
 var pcPredicted;
 var testDate = "<?php echo date("m"); ?>";
-var testConsumption = <?php echo json_encode($MonthlyAveragePower[(int)(date("m")) - 1]); ?>;
+var testConsumption;
 
 function refreshPredictedPowerConsumption() {
 	//refreshes every 10 seconds
 	setTimeout(refreshPredictedPowerConsumption, 10000);
     $.ajax({url: "intelligentLightControlData.php", success: function(result){
-        pcPredicted = parseInt(result);
+    	testConsumption = JSON.parse(result);
+    	pcCurrent = parseInt(testConsumption.current);
+        pcPredicted = parseInt(testConsumption.predicted);
         refreshProgressBars();
     }});
 }
