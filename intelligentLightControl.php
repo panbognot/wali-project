@@ -279,7 +279,7 @@ include './rightnavigationbar.php';
 
 </body>
 <script type="text/javascript">
-var pcTarget = 70000;
+var pcTarget;
 var pcCurrent;
 var pcPredicted;
 var testDate = "<?php echo date("m"); ?>";
@@ -388,11 +388,19 @@ function getTargetPowerConsumption() {
   var tempPC = $("#targetPCid").val();
 
   if (tempPC == "") {
-  	return;
+    $.ajax({url: "settingsdata.php?get", success: function(result){
+    	testConsumption = JSON.parse(result);
+    	pcTarget = parseInt(testConsumption.targetmonthlyconsumption);
+        refreshProgressBars();
+    }});
   };
 
   if (tempPC >= 0) {
     pcTarget = tempPC;
+
+    $.ajax({url: "settingsdata.php?update&targetmonthlyconsumption=" + pcTarget, success: function(result){
+    	//just activate the PHP file
+    }});
   }
 }
 $("#targetPCid").keypress(function(e) {
@@ -453,6 +461,7 @@ $("#predictedPCid").blur(function(){
 $(document).ready(function(){
 	$('[data-toggle="tooltip"]').tooltip(); 
 	$(".jumbotron").hide();
+	getTargetPowerConsumption();
 	refreshPredictedPowerConsumption();
 	//refreshProgressBars();
 });
