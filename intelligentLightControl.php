@@ -289,16 +289,22 @@ function changeLightIntensities() {
 	//refreshes every 10 seconds
 	//setTimeout(changeLightIntensities, 10000);
 	var reduction;
-	if (intensityReduction < 1) {
+	if ((intensityReduction < 1) && (intensityReduction > 0)) {
 		reduction = 1;
 	}
+	else if (intensityReduction > 1) {
+		reduction = intensityReduction;
+	}
 	else {
-		reduction = intensityReduction
+		return;
 	}
 
-    $.ajax({url: "intelligentLightControlSchedUpdate.php?change=" + (1-((reduction*1.15)/100)), success: function(result){
+    $.ajax({url: "intelligentLightControlSchedUpdate.php?change=" + (1-((reduction*1.25)/100)), success: function(result){
     	//Refresh the graphs after the light intensity changes
         refreshPredictedPowerConsumption();
+        setTimeout(function() {
+        	changeLightIntensities();
+        }, 500);
     }});
 }
 
@@ -320,6 +326,7 @@ function refreshProgressBars() {
       maxValue = 0,
       ratioPredOverTarg = 0;
 
+  intensityReduction = 0;
   //Predicted will always be greater than Current because
   //predicted = current + predicted consumption * remaining hours
 
