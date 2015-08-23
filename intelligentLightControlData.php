@@ -140,7 +140,7 @@ if ($curMonth == 12)
 else
     $firstDayNextMonth = mktime(0, 0, 0, $curMonth+1, 1);
 
-$daysTilNextMonth = ($firstDayNextMonth - mktime()) / (24 * 3600);
+$daysTilNextMonth = ($firstDayNextMonth - time()) / (24 * 3600);
 //echo "Days left till next month: $daysTilNextMonth <Br><Br>";
 
 $ctr=0;
