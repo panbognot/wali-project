@@ -237,7 +237,7 @@ include './rightnavigationbar.php';
 			  <h2>Power Consumption for <?php echo date("M Y") ?></h2>
 			  <a href="#" data-toggle="tooltip" title="Enabling the Auto Light Intesity Adjustment will give the user less worries in making sure that the power consumption for the month will not exceed the target consumption. This feature recalculates how much reduction in light intensity should be executed should the Predicted Consumption exceed the Target Consumption. Predicted Consumption is calculated based on the cluster schedules set by the user.">
 			  	<label class="checkbox-inline">
-			  		<input type="checkbox" value="">Enable Auto Light Intensity Adjustment (ALIA) [to be implemented]
+			  		<input id="enableALIA" type="checkbox" value="">Enable Auto Light Intensity Adjustment (ALIA) [to be implemented]
 			  	</label>
 			  </a>
 			  <Br><Br>
@@ -284,6 +284,7 @@ var pcCurrent;
 var pcPredicted;
 var testDate = "<?php echo date("m"); ?>";
 var intensityReduction;
+var enableALIA;
 
 function changeLightIntensities() {
 	//refreshes every 10 seconds
@@ -349,10 +350,17 @@ function refreshProgressBars() {
     //Intensity reduction is 5% more of calculated for the sake of margins
     intensityReduction = (1 - ((pcTarget-pcCurrent)/(pcPredicted-pcCurrent))) * 100;
 
-    $("#intensityID").text("Predicted Consumption is " + parseFloat(ratioPredOverTarg.toFixed(2)) + 
-    	"% more of Target Consumption. Click this to reduce the intensity of lights by " + 
-    	parseFloat(intensityReduction.toFixed(2)) + "% and conform with the Target Consumption.");
-    $(".jumbotron").show();
+    if (enableALIA) {
+    	//Automated Changing of Light Intensities
+    	changeLightIntensities();
+    	$(".jumbotron").hide();
+    }
+    else {
+	    $("#intensityID").text("Predicted Consumption is " + parseFloat(ratioPredOverTarg.toFixed(2)) + 
+	    	"% more of Target Consumption. Click this to reduce the intensity of lights by " + 
+	    	parseFloat(intensityReduction.toFixed(2)) + "% and conform with the Target Consumption.");
+	    $(".jumbotron").show();
+    }
   };
 
   if (parseInt(pcTarget) < parseInt(pcCurrent)) {
@@ -456,6 +464,18 @@ $("#predictedPCid").keypress(function(e) {
 $("#predictedPCid").blur(function(){
   getPredictedPowerConsumption();
   refreshProgressBars();
+});
+
+$("#enableALIA").click(function() {
+	if ($('#enableALIA').is(':checked')) {
+		enableALIA = 1;
+		changeLightIntensities();
+	    //alert("checked");
+	}
+	else {
+		enableALIA = 0;
+	    //alert("NO check");
+	}
 });
 
 $(document).ready(function(){
