@@ -52,5 +52,54 @@ else if (isset($_GET['update']) && isset($_GET['targetmonthlyconsumption'])) {
 	$result=mysql_query($sql, $con);
 	mysql_close($con);
 }
+else if (isset($_GET['createsnapshot'])) {
+	//echo "Create Snapshot";
+
+	echo "Drop the current snapshot first<Br>";
+	$sql="DROP TABLE alarm_schedule_snapshot;";
+	$result=mysql_query($sql, $con);
+
+	echo "Create the new snapshot<Br>";
+	$sql="CREATE TABLE alarm_schedule_snapshot AS
+		   SELECT *
+		   FROM alarm_schedule;";
+	$result=mysql_query($sql, $con);
+	mysql_close($con);
+
+}
+else if (isset($_GET['revertschedule'])) {
+	//echo "Revert Schedule";
+
+	$sql="SELECT 1 FROM alarm_schedule_snapshot LIMIT 1;";
+	$exists=mysql_query($sql, $con);
+
+	if ($exists) {
+		//echo "Drop current schedule.<Br>";
+		$sql="DROP TABLE alarm_schedule;";
+		$result=mysql_query($sql, $con);
+
+		//sleep(1);
+
+		//echo "Create current schedule using the saved schedule.<Br>";
+		$sql="CREATE TABLE alarm_schedule AS
+		   SELECT *
+		   FROM alarm_schedule_snapshot;";
+		$result=mysql_query($sql, $con);	
+
+		echo "success";
+	} else {
+		echo "fail";
+	}
+
+	
+	/*
+	$sql="CREATE TABLE alarm_schedule_snapshot AS
+		   SELECT *
+		   FROM alarm_schedule;";
+	$result=mysql_query($sql, $con);
+	*/
+
+	mysql_close($con);
+}
 
 ?>

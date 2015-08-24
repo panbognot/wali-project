@@ -206,7 +206,7 @@ include './header.php';
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-warning" data-dismiss="modal" data-toggle="modal" data-target="#finishSnapshot">Create Snapshot</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal" data-toggle="modal" data-target="#finishSnapshot" onclick="createScheduleSnapshot()">Create Snapshot</button>
 			</div>
 		</div>
     </div>
@@ -243,7 +243,7 @@ include './header.php';
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-warning" data-dismiss="modal" data-toggle="modal" data-target="#finishRevert">Revert to Saved Schedule</button>
+				<button type="button" class="btn btn-warning" data-dismiss="modal" data-toggle="modal" data-target="#finishRevert" onclick="revertSchedule()">Revert to Saved Schedule</button>
 			</div>
 		</div>
     </div>
@@ -339,6 +339,7 @@ var pcPredicted;
 var testDate = "<?php echo date("m"); ?>";
 var intensityReduction;
 var enableALIA;
+var testResponse;
 
 function changeLightIntensities() {
 	//refreshes every 10 seconds
@@ -371,6 +372,20 @@ function refreshPredictedPowerConsumption() {
     	pcCurrent = parseInt(testConsumption.current);
         pcPredicted = parseInt(testConsumption.predicted);
         refreshProgressBars();
+    }});
+}
+
+function createScheduleSnapshot() {
+    $.ajax({url: "settingsdata.php?createsnapshot", success: function(result){
+    	//alert("created snapshot");
+    }});
+}
+
+function revertSchedule() {
+    $.ajax({url: "settingsdata.php?revertschedule", success: function(result){
+    	//testResponse = '"' + result + '"';
+    	//setTimeout(refreshProgressBars, 500);
+    	refreshProgressBars();
     }});
 }
 
