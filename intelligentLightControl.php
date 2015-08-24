@@ -192,20 +192,76 @@ mysql_free_result($result);
 <?php
 include './header.php';
 ?>
-<!-- Modal -->
-<div class="modal fade" id="myModal" role="dialog">
+<!-- Modal for Create Snapshot -->
+<div class="modal fade" id="createSnapshot" role="dialog">
     <div class="modal-dialog">
 		<!-- Modal content-->
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">Modal Header</h4>
+				<h4 class="modal-title">Create Schedule Snapshot</h4>
 			</div>
 			<div class="modal-body">
-				<p>Some text in the modal.</p>
+				<p>Would you like to create a snapshot of your current working schedule?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal" data-toggle="modal" data-target="#finishSnapshot">Create Snapshot</button>
+			</div>
+		</div>
+    </div>
+</div>
+<!-- Confirm Snapshot Creation -->
+<div class="modal fade" id="finishSnapshot" role="dialog">
+    <div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Schedule Snapshot</h4>
+			</div>
+			<div class="modal-body">
+				<p>Schedule Snapshot Created Successfully</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-warning" data-dismiss="modal">Okay</button>
+			</div>
+		</div>
+    </div>
+</div>
+<!-- Revert Schedule -->
+<div class="modal fade" id="revertSchedule" role="dialog">
+    <div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Revert to Saved Schedule Snapshot</h4>
+			</div>
+			<div class="modal-body">
+				<p>Would you like to revert to your saved schedule snapshot?</p>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-warning" data-dismiss="modal" data-toggle="modal" data-target="#finishRevert">Revert to Saved Schedule</button>
+			</div>
+		</div>
+    </div>
+</div>
+<!-- Confirm Schedule Revert -->
+<div class="modal fade" id="finishRevert" role="dialog">
+    <div class="modal-dialog">
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Revert Schedule</h4>
+			</div>
+			<div class="modal-body">
+				<p>Scheduled Reverted Successfully!</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-warning" data-dismiss="modal">Okay</button>
 			</div>
 		</div>
     </div>
@@ -223,13 +279,12 @@ include './rightnavigationbar.php';
 			    <span class="input-group-addon">Watt-Hours</span>
 			  </div>
 			  <h2>Power Consumption for <?php echo date("M Y") ?>
-			  	&nbsp;
-			  	<span data-toggle="modal" data-target="#myModal">
+			  	<span data-toggle="modal" data-target="#createSnapshot">
 				  	<a class="btn btn-default" role="button" data-toggle="tooltip" data-placement="auto" title="Save Schedule Snapshot for easy Schedule Reversion">
 				  		<span class="glyphicon glyphicon-screenshot"></span>
 				  	</a>
 			  	</span>
-			  	<span data-toggle="modal" data-target="#myModal">
+			  	<span data-toggle="modal" data-target="#revertSchedule">
 				  	<a class="btn btn-default" role="button" data-toggle="tooltip" data-placement="auto" title="Revert to Saved Schedule Snapshot">
 				  		<span class="glyphicon glyphicon-share"></span>
 				  	</a>
