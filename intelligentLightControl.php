@@ -192,22 +192,23 @@ mysql_free_result($result);
 <?php
 include './header.php';
 ?>
-<div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" arial-labelledby="myModalLabel" arial-hidden="true">
-	<div class="modal-dialog modal-sm">
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+		<!-- Modal content-->
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" arial-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">Options</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Modal Header</h4>
 			</div>
 			<div class="modal-body">
-				<p>Modify the brightness or delete the event?</p>
+				<p>Some text in the modal.</p>
 			</div>
 			<div class="modal-footer">
-				<button type="button" id="edit" class="btn btn-default">Edit Brightness</button>
-				<button type="button" id="delete" class="btn btn-warning">Delete Event</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
-	</div>
+    </div>
 </div>
 <?php
 include './rightnavigationbar.php';
@@ -221,20 +222,19 @@ include './rightnavigationbar.php';
 			    <input id="targetPCid" type="text" class="form-control" placeholder="Enter your target Power Consumption" aria-label="Watt-Hours">
 			    <span class="input-group-addon">Watt-Hours</span>
 			  </div>
-			<!--
-			  <div class="input-group">
-			  	<span class="input-group-addon" id="basic-addon1">Current Consumption</span>
-			    <input id="currentPCid" type="text" class="form-control" placeholder="Enter your Current Power Consumption" aria-label="Watt-Hours">
-			    <span class="input-group-addon">Watt-Hours</span>
-			  </div>
-
-			  <div class="input-group">
-			  	<span class="input-group-addon" id="basic-addon1">Predicted Consumption</span>
-			    <input id="predictedPCid" type="text" class="form-control" placeholder="Enter your Predicted Power Consumption" aria-label="Watt-Hours">
-			    <span class="input-group-addon">Watt-Hours</span>
-			  </div>
-			-->
-			  <h2>Power Consumption for <?php echo date("M Y") ?></h2>
+			  <h2>Power Consumption for <?php echo date("M Y") ?>
+			  	&nbsp;
+			  	<span data-toggle="modal" data-target="#myModal">
+				  	<a class="btn btn-default" role="button" data-toggle="tooltip" data-placement="auto" title="Save Schedule Snapshot for easy Schedule Reversion">
+				  		<span class="glyphicon glyphicon-screenshot"></span>
+				  	</a>
+			  	</span>
+			  	<span data-toggle="modal" data-target="#myModal">
+				  	<a class="btn btn-default" role="button" data-toggle="tooltip" data-placement="auto" title="Revert to Saved Schedule Snapshot">
+				  		<span class="glyphicon glyphicon-share"></span>
+				  	</a>
+			  	</span>
+			  </h2>
 			  <a href="#" data-toggle="tooltip" title="Enabling the Auto Light Intesity Adjustment will give the user less worries in making sure that the power consumption for the month will not exceed the target consumption. This feature recalculates how much reduction in light intensity should be executed should the Predicted Consumption exceed the Target Consumption. Predicted Consumption is calculated based on the cluster schedules set by the user.">
 			  	<label class="checkbox-inline">
 			  		<input id="enableALIA" type="checkbox" value="">Enable Auto Light Intensity Adjustment (ALIA) [to be implemented]
@@ -261,9 +261,8 @@ include './rightnavigationbar.php';
 			  </div>
 			 
 			  <div class="jumbotron">
-			    <a href="#" onclick="changeLightIntensities()">
-			      <h2 id="intensityID"></h2> 
-			    </a>
+			  	<h2 id="intensityID"></h2>
+			    <a href="#" class="btn btn-warning btn-lg" role="button" onclick="changeLightIntensities()">Commit New Schedule Changes</a>
 			  </div>  
 			</div>
 		</div>
@@ -357,8 +356,8 @@ function refreshProgressBars() {
     }
     else {
 	    $("#intensityID").text("Predicted Consumption is " + parseFloat(ratioPredOverTarg.toFixed(2)) + 
-	    	"% more of Target Consumption. Click this to reduce the intensity of lights by " + 
-	    	parseFloat(intensityReduction.toFixed(2)) + "% and conform with the Target Consumption.");
+	    	"% more of Target Consumption. It is suggested that the system reduce the intensity of lights by " + 
+	    	parseFloat(intensityReduction.toFixed(2)) + "% to conform with the Target Consumption.");
 	    $(".jumbotron").show();
     }
   };
