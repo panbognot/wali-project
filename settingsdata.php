@@ -64,8 +64,13 @@ else if (isset($_GET['createsnapshot'])) {
 		   SELECT *
 		   FROM alarm_schedule;";
 	$result=mysql_query($sql, $con);
-	mysql_close($con);
 
+	$sql="UPDATE settings 
+		  SET datesnapshot='". date("Y-m-d H:i:s") ."'
+		  WHERE username='" . strtolower($_SESSION['user']) . "';";
+	$result=mysql_query($sql, $con);
+
+	mysql_close($con);
 }
 else if (isset($_GET['revertschedule'])) {
 	//echo "Revert Schedule";
@@ -90,14 +95,6 @@ else if (isset($_GET['revertschedule'])) {
 	} else {
 		echo "fail";
 	}
-
-	
-	/*
-	$sql="CREATE TABLE alarm_schedule_snapshot AS
-		   SELECT *
-		   FROM alarm_schedule;";
-	$result=mysql_query($sql, $con);
-	*/
 
 	mysql_close($con);
 }
