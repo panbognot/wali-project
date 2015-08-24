@@ -239,7 +239,7 @@ include './header.php';
 				<h4 class="modal-title">Revert to Saved Schedule Snapshot</h4>
 			</div>
 			<div class="modal-body">
-				<p>Would you like to revert to your saved schedule snapshot?</p>
+				<p id="dateSnapshotID">Would you like to revert to your saved schedule snapshot?</p>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -339,7 +339,7 @@ var pcPredicted;
 var testDate = "<?php echo date("m"); ?>";
 var intensityReduction;
 var enableALIA;
-var testResponse;
+var dateSnapshot;
 
 function changeLightIntensities() {
 	//refreshes every 10 seconds
@@ -378,6 +378,12 @@ function refreshPredictedPowerConsumption() {
 function createScheduleSnapshot() {
     $.ajax({url: "settingsdata.php?createsnapshot", success: function(result){
     	//alert("created snapshot");
+    	$.ajax({url: "settingsdata.php?get", success: function(result){
+	    	testConsumption = JSON.parse(result);
+			dateSnapshot = testConsumption.datesnapshot;
+			
+	        refreshRevertSchedule();
+	    }});
     }});
 }
 
@@ -387,6 +393,10 @@ function revertSchedule() {
     	//setTimeout(refreshProgressBars, 500);
     	refreshProgressBars();
     }});
+}
+
+function refreshRevertSchedule() {
+	$("#dateSnapshotID").text("Would you like to revert to your saved schedule snapshot [" + dateSnapshot + "]?");
 }
 
 function refreshProgressBars() {
@@ -468,7 +478,11 @@ function getTargetPowerConsumption() {
     $.ajax({url: "settingsdata.php?get", success: function(result){
     	testConsumption = JSON.parse(result);
     	pcTarget = parseInt(testConsumption.targetmonthlyconsumption);
+    	enableALIA = parseInt(testConsumption.en_alia);
+		dateSnapshot = testConsumption.datesnapshot;
+
         refreshProgressBars();
+        refreshRevertSchedule();
     }});
   };
 

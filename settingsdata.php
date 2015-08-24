@@ -26,6 +26,7 @@ if (isset($_GET['get'])) {
 	$row=mysql_fetch_array($result);
 		$latestSettings['targetmonthlyconsumption'] = $row['targetmonthlyconsumption'];
 		$latestSettings['en_alia'] = $row['en_alia'];
+		$latestSettings['datesnapshot'] = $row['datesnapshot'];
 	mysql_free_result($result);
 	mysql_close($con);
 	echo json_encode($latestSettings);
