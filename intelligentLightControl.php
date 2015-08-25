@@ -481,6 +481,8 @@ function getTargetPowerConsumption() {
     	enableALIA = parseInt(testConsumption.en_alia);
 		dateSnapshot = testConsumption.datesnapshot;
 
+		setALIA();
+
         refreshProgressBars();
         refreshRevertSchedule();
     }});
@@ -549,16 +551,34 @@ $("#predictedPCid").blur(function(){
   refreshProgressBars();
 });
 
-$("#enableALIA").click(function() {
+function setALIA() {
+	if (enableALIA) {
+		$('#enableALIA').prop('checked', true);
+	} else{
+		$('#enableALIA').prop('checked', false);
+	};
+}
+
+function setServerALIA() {
+    $.ajax({url: "settingsdata.php?update&en_alia=" + enableALIA, success: function(result){
+    	//this will change the alia value in the database
+    }});	
+}
+
+function checkALIA() {
 	if ($('#enableALIA').is(':checked')) {
 		enableALIA = 1;
 		changeLightIntensities();
-	    //alert("checked");
 	}
 	else {
 		enableALIA = 0;
-	    //alert("NO check");
 	}
+
+	setServerALIA();
+}
+
+$("#enableALIA").change(function() {
+	checkALIA();
 });
 
 $(document).ready(function(){
